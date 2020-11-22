@@ -11,8 +11,11 @@ function findPaintings($search)
     $sql .= " WHERE Title LIKE '%$search%'";
     $sql .= " ORDER BY YearOfWork";
 
-    $result = $pdo->query($sql);
-    $paintings = $result->fetchAll(PDO::FETCH_ASSOC);
+    $statement = $pdo->query($sql);
+    $statement->bindValue((1, '%' . $search . '%'));
+    $statement->execute();
+
+    $paintings = $statement->fetchAll(PDO::FETCH_ASSOC);
     $pdo = null;
     return $paintings;
   } catch (PDOException $e) {
