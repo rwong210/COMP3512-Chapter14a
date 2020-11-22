@@ -20,8 +20,9 @@
 
             // execute an SQL statement, return the result set as PDOStatement Object (a "cursor")
             $result = $pdo->query($sql);
+            $data =$result->fetchAll(PDO::FETCH_ASSOC);
             
-            /*loop through the data - note that if fetch returns FALSE on failure, else it returns the current data
+            /*loop through the data - note that fetch returns FALSE on failure, else it returns the current data
             basically, variable row is assigned the associative array returned by fetch method acting/of result,
             row is the current row of the filtered table returned to result with each column being a field/column by name.
             In this case our SQL returns all entries from Artist table ordered by LastName field value.
@@ -35,8 +36,13 @@
             //    echo $row['ArtistID'] . " - " . $row['LastName'] . "<br/>";
 
             // same thing as foreach loop - with a foreach the fetch() happens implicitly
-            foreach ($result as $row) {
-                echo $row[0] . " - " . $row['LastName'] . "<br/>";
+            foreach ($data as $row) {
+                echo $row['ArtistID'] . " - " . $row['LastName'] . "<br/>";
+            }
+
+            echo '<h2>-------- Second Loop -------</h2>';
+            foreach ($data as $row) {
+                echo $row['ArtistID'] . " - " . $row['LastName'] . "<br/>";
             }
 
             // close the connection after completion 
