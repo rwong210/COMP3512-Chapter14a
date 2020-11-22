@@ -12,7 +12,7 @@ function findPaintings($search)
     $sql .= " ORDER BY YearOfWork";
 
     $statement = $pdo->query($sql);
-    $statement->bindValue((1, '%' . $search . '%'));
+    $statement->bindValue(1, '%' . $search . '%');
     $statement->execute();
 
     $paintings = $statement->fetchAll(PDO::FETCH_ASSOC);
