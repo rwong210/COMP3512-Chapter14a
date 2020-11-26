@@ -77,29 +77,37 @@ class PaintingDB
 
     public function getAllForArtist($artistID)
     {
-        $sql = self::$baseSQL . " WHERE Paintings.ArtistID=?";
+        $sql = "SELECT PaintingID, Paintings.ArtistID, FirstName, LastName, 
+        Paintings.GalleryID, GalleryName, ImageFileName, Title, Excerpt, YearOfWork
+        FROM Galleries INNER JOIN (Artists INNER JOIN Paintings ON 
+        Artists.ArtistID = Paintings.ArtistID) ON Galleries.GalleryID = Paintings.GalleryID"; 
+        $sql .= " WHERE Paintings.ArtistID=?";
         $statement = DatabaseHelper::runQuery($this->pdo, $sql, array($artistID));
         return $statement->fetchAll();
     }
 
     public function getAllForGallery($galleryID)
     {
-        $sql = self::$baseSQL . " WHERE Paintings.GalleryID=?";
+        $sql = "SELECT PaintingID, Paintings.ArtistID, FirstName, LastName, 
+        Paintings.GalleryID, GalleryName, ImageFileName, Title, YearOfWork,
+        Excerpt FROM Galleries INNER JOIN (Artists INNER JOIN Paintings ON 
+        Artists.ArtistID = Paintings.ArtistID) ON Galleries.GalleryID = Paintings.GalleryID
+        WHERE Paintings.GalleryID=?";
         $statement = DatabaseHelper::runQuery($this->pdo, $sql, array($galleryID));
         return $statement->fetchAll();
     }
 
-    public function getTop20($galleryID)
+    public function getTop20()
     {
         $sql = "SELECT PaintingID, Paintings.ArtistID, FirstName, LastName, 
-        Paintings.GalleryID, GalleryName,ImageFileName, Title, Excerpt, YearOfWork
+        Paintings.GalleryID, GalleryName, ImageFileName, Title, YearOfWork,
         Excerpt FROM Galleries INNER JOIN (Artists INNER JOIN Paintings ON 
         Artists.ArtistID = Paintings.ArtistID) ON Galleries.GalleryID = Paintings.GalleryID";
-        $sql .= " WHERE Paintings.GalleryID=?";
         $sql = addSortAndLimit($sql);
-        $statement = DatabaseHelper::runQuery($this->pdo, $sql, array($galleryID));
+        $statement = DatabaseHelper::runQuery($this->pdo, $sql, null);
         return $statement->fetchAll();
     }
+
 }
 
 // Gateway class for Galleries Table

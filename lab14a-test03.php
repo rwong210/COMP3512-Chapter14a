@@ -9,11 +9,11 @@ try {
   // now retrieve galleries 
   $galleries = getAllGalleries($conn);
 
-  // now retrieve  paintings as a subset based on querystring
+  // now retrieve all the paintings or paintings as a subset based on querystring
   if (isset($_GET['museum']) && $_GET['museum'] > 0) {
     $paintings = getPaintingsByGallery($conn, $_GET['museum']);
-  } else {
-    $paintings = null;
+  } else{
+    $paintings = getTop20Paintings($conn);
   }
 } catch (Exception $e) {
   die($e->getMessage());

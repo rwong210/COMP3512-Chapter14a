@@ -27,10 +27,15 @@ function getAllPaintings($connection)
 function getPaintingsByGallery($connection, $gallery)
 {
     $paintGateway = new PaintingDB($connection);
-    $paintings = $paintGateway->getTop20($gallery);
+    $paintings = $paintGateway->getAllForGallery($gallery);
     return $paintings;
 }
 
+function getTop20Paintings($connection){
+    $paintGateway = new PaintingDB($connection);
+    $paintings = $paintGateway->getTop20();
+    return $paintings;
+}
 function outputPaintings($paintings){
     if ($paintings != null)
     foreach ($paintings as $row){
@@ -43,7 +48,7 @@ function outputPaintings($paintings){
     echo  '<p>' . $row['Excerpt'] . '</p>';
     echo  '</div>';
     echo  '<div class="meta">';
-    echo  '<strong>' .$row['YearOfWork'] . '</strong>';
+    echo  '<strong>' . $row['YearOfWork'] . '</strong>';
     echo  '</div>';
     echo  '</div>';
     echo  '</li>';
