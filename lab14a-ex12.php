@@ -6,6 +6,10 @@ try {
    $pdo = new PDO(DBCONNSTRING,DBUSER,DBPASS);
    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
    
+   // if it is a POST, then there is user input to save
+   if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      addPerson($pdo, $_POST['name'], $_POST['email']);
+   }
 
 
    $people = getPeople($pdo);   
@@ -20,6 +24,19 @@ function getPeople($pdo) {
    $result = $pdo->query($sql);
    return $result->fetchAll(PDO::FETCH_ASSOC); 
 }
+
+function addPerson($pdo, $name, $email) {
+   $sql = "INSERT INTO Editable (name, email) VALUES (:name, :email)";
+   $statement = $pdo->prepare($sql);
+   $statement->bindValue(':name', $name);
+   
+   //$statement->bindValue(':email', $email);
+   //$statement->execute();
+
+   // same as two statements above, shorcut approach
+   $statement->execute(array("name"=>$name,"email"=>$email));
+}
+
 
 
 
