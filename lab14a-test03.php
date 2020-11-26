@@ -4,7 +4,19 @@ require_once 'config.inc.php';
 require_once 'lab14a-test03-helpers.inc.php';
 require_once 'lab14a-db-classes.inc.php';
 
-    
+try {
+  $conn = DatabaseHelper::createConnection(array(DBCONNSTRING, DBUSER, DBPASS));
+  $artGateway = new ArtistDB($conn);
+  $artists = $artGateway->getAll();
+  if (isset($_GET['id']) && $_GET['id'] > 0) {
+     $paintGateway = new PaintingDB($conn);
+     $paintings = $paintGateway->getAllForArtist($_GET['id']);
+  } else {
+     $paintings = null;
+  }
+} catch (Exception $e) {
+  die($e->getMessage());
+}   
 // now retrieve galleries 
  
 // now retrieve  paintings ... either all or a subset based on querystring
@@ -34,7 +46,9 @@ require_once 'lab14a-db-classes.inc.php';
             <select class="ui fluid dropdown" name="museum">
                 <option value='0'>Select Museum</option>  
                 <?php  
-                   // output all the retrieved galleries (hint: set value attribute of <option> to the GalleryID field)
+                   // output all the retrieved galleries 
+                   // (hint: set value attribute of <option> to the GalleryID field)
+                   
                 ?>
             </select>
           </div>   
@@ -78,3 +92,4 @@ require_once 'lab14a-db-classes.inc.php';
 </footer>
 </body>
 </html>
+

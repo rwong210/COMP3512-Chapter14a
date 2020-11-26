@@ -89,3 +89,36 @@ class PaintingDB
         return $statement->fetchAll();
     }
 }
+
+class GalleryDB {
+
+    private static $baseSQL = "SELECT GalleryID, GalleryName FROM Galleries ORDER BY GalleryName";
+
+    public function __construct($connection)
+    {
+        $this->pdo = $connection;
+    }
+
+    public function getAll()  
+        {
+            $sql = getGallerySQL();
+            $statement = DatabaseHelper::runQuery($this->pdo, $sql, null);
+            return $statement->fetchAll();
+        }
+}
+
+function getGallerySQL() {
+    $sql = 'SELECT GalleryID, GalleryName, GalleryNativeName, GalleryCity, GalleryCountry, Latitude, Longitude, GalleryWebSite FROM Galleries';
+    $sql .= " ORDER BY GalleryName";
+    return $sql;
+ }
+ 
+ function getPaintingSQL() {
+     $sql = "SELECT PaintingID, Paintings.ArtistID AS ArtistID, FirstName, LastName, GalleryID, ImageFileName, Title, ShapeID, MuseumLink, AccessionNumber, CopyrightText, Description, Excerpt, YearOfWork, Width, Height, Medium, Cost, MSRP, GoogleLink, GoogleDescription, WikiLink, JsonAnnotations FROM Paintings INNER JOIN Artists ON Paintings.ArtistID = Artists.ArtistID  ";
+     return $sql;
+ }
+ 
+ function addSortAndLimit($sqlOld) {
+     $sqlNew = $sqlOld . " ORDER BY YearOfWork limit 20";
+     return $sqlNew;
+ }
