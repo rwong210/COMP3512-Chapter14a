@@ -36,10 +36,8 @@ class DatabaseHelper
     }
 }
 
-/*This creates two table gateway classes.
-A gateway class ideally encapsulates all database access details within it. 
-*/
 
+// Gateway class for Arists Table
 class ArtistDB
 {
     private static $baseSQL = "SELECT * FROM Artists ORDER BY LastName";
@@ -57,6 +55,7 @@ class ArtistDB
     }
 }
 
+// Gateway class for Paintings Table
 class PaintingDB
 {
     private static $baseSQL = "SELECT PaintingID, Paintings.ArtistID, FirstName, LastName, 
@@ -83,42 +82,64 @@ class PaintingDB
         return $statement->fetchAll();
     }
 
-    public function getAllForGallery($galleryID) {
+    public function getAllForGallery($galleryID)
+    {
         $sql = self::$baseSQL . " WHERE Paintings.GalleryID=?";
-        $statement = DatabaseHelper::runQuery($this->pdo, $sql, Array($galleryID));
+        $statement = DatabaseHelper::runQuery($this->pdo, $sql, array($galleryID));
+        return $statement->fetchAll();
+    }
+
+    public function getTop20($galleryID)
+    {
+        $sql = "SELECT PaintingID, Paintings.ArtistID, FirstName, LastName, 
+        Paintings.GalleryID, GalleryName,ImageFileName, Title, Excerpt, YearOfWork
+        Excerpt FROM Galleries INNER JOIN (Artists INNER JOIN Paintings ON 
+        Artists.ArtistID = Paintings.ArtistID) ON Galleries.GalleryID = Paintings.GalleryID";
+        $sql .= " WHERE Paintings.GalleryID=?";
+        $sql = addSortAndLimit($sql);
+        $statement = DatabaseHelper::runQuery($this->pdo, $sql, array($galleryID));
         return $statement->fetchAll();
     }
 }
 
-class GalleryDB {
-
-    private static $baseSQL = "SELECT GalleryID, GalleryName FROM Galleries ORDER BY GalleryName";
+// Gateway class for Galleries Table
+class GalleryDB
+{
+    private static $baseSQL = "SELECT * FROM Galleries ORDER BY GalleryName";
 
     public function __construct($connection)
     {
         $this->pdo = $connection;
     }
 
-    public function getAll()  
-        {
-            $sql = getGallerySQL();
-            $statement = DatabaseHelper::runQuery($this->pdo, $sql, null);
-            return $statement->fetchAll();
-        }
+    public function getAll()
+    {
+        $sql = getGallerySQL();
+        $statement = DatabaseHelper::runQuery($this->pdo, $sql, null);
+        return $statement->fetchAll();
+    }
 }
 
-function getGallerySQL() {
-    $sql = 'SELECT GalleryID, GalleryName, GalleryNativeName, GalleryCity, GalleryCountry, Latitude, Longitude, GalleryWebSite FROM Galleries';
+function getGallerySQL()
+{
+    $sql = 'SELECT GalleryID, GalleryName, GalleryNativeName, GalleryCity, 
+    GalleryCountry, Latitude, Longitude, GalleryWebSite FROM Galleries';
     $sql .= " ORDER BY GalleryName";
     return $sql;
- }
- 
- function getPaintingSQL() {
-     $sql = "SELECT PaintingID, Paintings.ArtistID AS ArtistID, FirstName, LastName, GalleryID, ImageFileName, Title, ShapeID, MuseumLink, AccessionNumber, CopyrightText, Description, Excerpt, YearOfWork, Width, Height, Medium, Cost, MSRP, GoogleLink, GoogleDescription, WikiLink, JsonAnnotations FROM Paintings INNER JOIN Artists ON Paintings.ArtistID = Artists.ArtistID  ";
-     return $sql;
- }
- 
- function addSortAndLimit($sqlOld) {
-     $sqlNew = $sqlOld . " ORDER BY YearOfWork limit 20";
-     return $sqlNew;
- }
+}
+
+function getPaintingSQL()
+{
+    $sql = "SELECT PaintingID, Paintings.ArtistID AS ArtistID, FirstName, 
+    LastName, GalleryID, ImageFileName, Title, ShapeID, MuseumLink, AccessionNumber, 
+    CopyrightText, Description, Excerpt, YearOfWork, Width, Height, Medium, Cost, MSRP, 
+    GoogleLink, GoogleDescription, WikiLink, JsonAnnotations FROM Paintings 
+    INNER JOIN Artists ON Paintings.ArtistID = Artists.ArtistID  ";
+    return $sql;
+}
+
+function addSortAndLimit($sqlOld)
+{
+    $sqlNew = $sqlOld . " ORDER BY YearOfWork limit 20";
+    return $sqlNew;
+}

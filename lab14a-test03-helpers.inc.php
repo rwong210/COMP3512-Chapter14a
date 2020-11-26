@@ -1,25 +1,8 @@
 <?php
 
-/* these three will need to be moved to lab14a-db-classes.inc.php */
 
-function getGallerySQL() {
-   $sql = 'SELECT GalleryID, GalleryName, GalleryNativeName, GalleryCity, GalleryCountry, Latitude, Longitude, GalleryWebSite FROM Galleries';
-   $sql .= " ORDER BY GalleryName";
-   return $sql;
-}
-
-function getPaintingSQL() {
-    $sql = "SELECT PaintingID, Paintings.ArtistID AS ArtistID, FirstName, LastName, GalleryID, ImageFileName, Title, ShapeID, MuseumLink, AccessionNumber, CopyrightText, Description, Excerpt, YearOfWork, Width, Height, Medium, Cost, MSRP, GoogleLink, GoogleDescription, WikiLink, JsonAnnotations FROM Paintings INNER JOIN Artists ON Paintings.ArtistID = Artists.ArtistID  ";
-    return $sql;
-}
-
-function addSortAndLimit($sqlOld) {
-    $sqlNew = $sqlOld . " ORDER BY YearOfWork limit 20";
-    return $sqlNew;
-}
-
-
-function makeArtistName($first, $last) {
+function makeArtistName($first, $last)
+{
     return utf8_encode($first . ' ' . $last);
 }
 
@@ -27,18 +10,42 @@ function makeArtistName($first, $last) {
 /*
   You will likely need to implement functions such as these ...
 */
-function getAllGalleries($connection) {
-  
+function getAllGalleries($connection)
+{
+    $galleriesGateway = new GalleryDB($connection);
+    $galleries = $galleriesGateway->getAll();
+    return $galleries;
 }
 
-function getAllPaintings($connection) {
-      
+function getAllPaintings($connection)
+{
+    $paintGateway = new PaintingDB($connection);
+    $paintings = $paintGateway->getALL();
+    return $paintings;
 }
 
-function getPaintingsByGallery($connection, $gallery) {
-     
+function getPaintingsByGallery($connection, $gallery)
+{
+    $paintGateway = new PaintingDB($connection);
+    $paintings = $paintGateway->getTop20($gallery);
+    return $paintings;
 }
 
-
-
-?>
+function outputPaintings($paintings){
+    if ($paintings != null)
+    foreach ($paintings as $row){
+    echo '<li class="item">';
+    echo '<a class="ui small image" href="single-painting.php?id=' . $row['PaintingID'] . '"><img src="images/art/works/square-medium/' .$row['ImageFileName']. '.jpg"></a>';
+    echo '<div class="content">';
+    echo  '<a class="header" href="single-painting.php?id=' .$row['PaintingID'].'">' . $row['Title'] . '</a>';
+    echo  '<div class="meta"><span class="cinema">' .$row['FirstName'] .' '. $row['LastName'] . '</span></div>';
+    echo  '<div class="description">';
+    echo  '<p>' . $row['Excerpt'] . '</p>';
+    echo  '</div>';
+    echo  '<div class="meta">';
+    echo  '<strong>' .$row['YearOfWork'] . '</strong>';
+    echo  '</div>';
+    echo  '</div>';
+    echo  '</li>';
+}
+    }

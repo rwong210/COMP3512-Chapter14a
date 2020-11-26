@@ -55,3 +55,4 @@ function outputSinglePainting($row)
    echo '</div>';
    echo '</div>';
 }
+
