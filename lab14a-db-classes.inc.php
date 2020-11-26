@@ -40,38 +40,52 @@ class DatabaseHelper
 A gateway class ideally encapsulates all database access details within it. 
 */
 
-class ArtistDB {
+class ArtistDB
+{
     private static $baseSQL = "SELECT * FROM Artists ORDER BY LastName";
 
-    public function __construct($connection) {
-        $this->pdo =$connection;
+    public function __construct($connection)
+    {
+        $this->pdo = $connection;
     }
 
-    public function getAll() {
+    public function getAll()
+    {
         $sql = self::$baseSQL;
         $statement = DatabaseHelper::runQuery($this->pdo, $sql, null);
         return $statement->fetchAll();
     }
 }
 
-class PaintingDB {
-    private static $baseSQL = "SELECT PaintingID, Paintings.ArtistID AS ArtistID, FirstName,
-        LastName, ImageFileName, Title, Excerpt FROM Paintings INNER JOIN Artists 
-        ON Paintings.ArtistID = Artists.ArtistID";
+class PaintingDB
+{
+    private static $baseSQL = "SELECT PaintingID, Paintings.ArtistID, FirstName, LastName, 
+    Paintings.GalleryID, GalleryName,ImageFileName, Title, 
+    Excerpt FROM Galleries INNER JOIN (Artists INNER JOIN Paintings ON 
+    Artists.ArtistID = Paintings.ArtistID) ON Galleries.GalleryID = Paintings.GalleryID";
 
-    public function __construct($connection) {
+    public function __construct($connection)
+    {
         $this->pdo = $connection;
     }
 
-    public function getALL() {
+    public function getALL()
+    {
         $sql = self::$baseSQL;
-        $statement = DatabaseHelper::runQuery($this-pdo, $sql, null);
+        $statement = DatabaseHelper::runQuery($this->pdo, $sql, null);
         return $statement->fetchAll();
     }
 
-    public function getAllForArtist($artistID) {
+    public function getAllForArtist($artistID)
+    {
         $sql = self::$baseSQL . " WHERE Paintings.ArtistID=?";
-        $statement = DatabaseHelper::runQuery($this->pdo, $sql, Array($artistID));
+        $statement = DatabaseHelper::runQuery($this->pdo, $sql, array($artistID));
+        return $statement->fetchAll();
+    }
+
+    public function getAllForGallery($galleryID) {
+        $sql = self::$baseSQL . " WHERE Paintings.GalleryID=?";
+        $statement = DatabaseHelper::runQuery($this->pdo, $sql, Array($galleryID));
         return $statement->fetchAll();
     }
 }
